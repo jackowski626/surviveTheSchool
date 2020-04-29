@@ -1,0 +1,127 @@
+<html>
+	<canvas height=400 width=400 style="border:solid" id="canvas"></canvas>
+	<script>
+		//////
+		/*Canvas*/
+		//////
+		var c = document.getElementById("canvas");
+		var ctx = c.getContext("2d");
+
+		
+		//////
+		/*Utilyty functions*/
+		//////
+		function deepcopy(obj) {
+			// body...
+		}
+
+
+		//////
+		/*Classes*/
+		//////
+
+		//MapTile
+		//base:bool; width:int; height:int; color:String; rel_x:int; rel_y:int; If base is false, rel_x and rel_y may not be null.
+		class MapTile {
+			constructor(base, width, height, color="ffffff", rel_x=null, rel_y=null) {
+				this.base = base;
+				this.width = width;
+				this.height = height;
+				this.color = color;
+				this.rel_x = rel_x;
+				this.rel_y = rel_y;
+			}
+			isBase() {
+				return this.base;
+			}
+		}
+
+		//Drawable
+		//rectMap: array with MapTiles. Each describes a colored rectangle. Only one is a "base", the others have positions given relatively to that base. First MapTile MUST be a base.
+		class Drawable {
+			x_pos = 0;
+			y_pos = 0;
+			constructor(rectMap, ctx=ctx) {
+				this.rectMap = rectMap;
+				this.ctx = ctx;
+			}
+			drawMapTile(mapTile) {
+				if (mapTile.isBase()) {
+					ctx.fillStyle = mapTile.color;
+					ctx.beginPath();
+					ctx.moveTo(this.x_pos, this.y_pos);
+					ctx.lineTo(this.x_pos + mapTile.width, this.y_pos);
+					ctx.lineTo(this.x_pos + mapTile.width, this.y_pos + mapTile.height);
+					ctx.lineTo(this.x_pos, this.y_pos + mapTile.height);
+					ctx.lineTo(this.x_pos, this.y_pos);
+					ctx.fill();
+					ctx.stroke();
+				} else {
+					ctx.fillStyle = mapTile.color;
+					ctx.beginPath();
+					ctx.moveTo(this.x_pos + mapTile.rel_x, this.y_pos + mapTile.rel_y);
+					ctx.lineTo(this.x_pos + mapTile.width + mapTile.rel_x, this.y_pos + mapTile.rel_y);
+					ctx.lineTo(this.x_pos + mapTile.width + mapTile.rel_x, this.y_pos + mapTile.height + mapTile.rel_y);
+					ctx.lineTo(this.x_pos + mapTile.rel_x, this.y_pos + mapTile.height + mapTile.rel_y);
+					ctx.lineTo(this.x_pos + mapTile.rel_x, this.y_pos + mapTile.rel_y);
+					ctx.fill();
+					ctx.stroke();
+				}
+			}
+			drawMap() {
+				if (this.rectMap[0].isBase()) {
+					for (var i = 0; i < this.rectMap.length; i++) {
+						drawMapTile(this.rectMap[i]);
+					}
+				} else {
+					Console.log("Invalid rectMap! First MapTile is not a base");
+				}
+			}
+		}
+
+		//EntityLiving
+		class EntityLiving extends Drawable {
+			constructor() {
+			}
+		}
+
+		//NPC
+		class NPC extends EntityLiving{
+			constructor() {
+			}
+			healthy = true;
+			symptoms = [];
+
+			x_vel = 0;
+			y_vel = 0;
+
+		}
+
+		//DrawableLayer
+		//Has a name and holds a number of drawable objects
+		class DrawableLayer {
+			constructor(name) {
+				this.name = name;
+			}
+			drawableArray = [];
+			registerDrawable(drawable) {
+				this.drawableArray.push(drawable);
+			}
+		}
+
+		//GameRegistry
+		class GameRegistry {
+			constructor(){
+
+			}
+			layerArray = [];
+			registerLayer(layer) {
+				layerArray.push(layer);
+			}
+
+			moveLayerToTop(name) {
+
+			}
+		}
+	</script>
+</html>
